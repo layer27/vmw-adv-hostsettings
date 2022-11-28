@@ -1,0 +1,20 @@
+{
+  "Net": {
+    "TcpipHeapSize": 32,
+    "TcpipHeapMax": 1024
+  },
+  "NFS": {
+    "MaxVolumes": 256,
+    "MaxQueueDepth": 128,
+    "HeartbeatMaxFailures": 10,
+    "HeartbeatFrequency": 12,
+    "HeartbeatTimeout": 5
+  },
+  "NFS41": {
+    "MaxVolumes": 256
+  },
+  "Disk": {
+    "QFullSampleSize": 32,
+    "QFullThreshold": 8
+  }
+}
