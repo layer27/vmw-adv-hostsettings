@@ -37,7 +37,7 @@ try {
 
 # Connect to vCenter
 try {
-    if ($null -ne $User -and $null -ne $Passwd) {
+    if ($User -and $Passwd) {
         $pw = ConvertTo-SecureString $Passwd -AsPlainText -Force
         $credential = New-Object System.Management.Automation.PSCredential ($User, $pw)
     } else  {
