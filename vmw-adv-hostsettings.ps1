@@ -1,6 +1,5 @@
-Using module "..\lib\log-service.psm1"
-Using module "..\lib\utils.psm1"
-Using module "..\lib\vmware.psm1"
+Using module "..\lib\module-instance.psm1"
+
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
