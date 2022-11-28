@@ -113,7 +113,7 @@ class ModuleInstance {
         Write-Host "`n=========== HOST: $hostname Advanced Properties Report ===========`n" -ForegroundColor Cyan
         
         foreach ($line in $data.properties) {
-          $this.log("Property: $($line.property) | Update Required?: $($line.updateRequired) | Current Value: $($line.currentValue) | Target Value: $($line.targetValue)")
+          $this.log("Host: $hostname | Property: $($line.property) | Update Required?: $($line.updateRequired) | Current Value: $($line.currentValue) | Target Value: $($line.targetValue)")
           if ($line.updateRequired) {
             Write-Host "  Property: $($line.property) | Update Required?: TRUE | Current Value: $($line.currentValue) | Target Value: $($line.targetValue)" -ForegroundColor Yellow
           } else {
