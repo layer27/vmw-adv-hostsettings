@@ -3,7 +3,7 @@ class LogService {
     # used for singleton instance
     static [LogService] $_instance
 
-    [string] $name = "Pwsh-Fax-Datamover"
+    [string] $name = "VMW-ADV-HOSTSETTINGS"
     [string] $logPath
     [string] $logFile
     [string] $errLogFile
