@@ -1,4 +1,5 @@
 run/*
 local/*
 .DS_Store
-
+custom-settings/*.json
+/logs

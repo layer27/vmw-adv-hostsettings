@@ -1,5 +1,5 @@
-Using module "..\lib\services\log-service.psm1"
-Using module "..\lib\services\vmware-service.psm1"
+Using module ".\services\log-service.psm1"
+Using module ".\services\vmware-service.psm1"
 Using module ".\utils.psm1"
 
 
@@ -38,6 +38,7 @@ class ModuleInstance {
       $this.log("Successfully Connected to vCenter: $vCenter")
     } catch {
       $this.error("Error Connecting to vCenter: $vCenter", $_)
+      throw "Error Connecting to vCenter: $vCenter"
     }
   }
 
@@ -48,6 +49,7 @@ class ModuleInstance {
       $this.log("Successfully Connected to vCenter: $vCenter")
     } catch {
       $this.error("Error Connecting to vCenter: $vCenter", $_)
+      throw "Error Connecting to vCenter: $vCenter"
     }
   }
 
@@ -70,24 +72,26 @@ class ModuleInstance {
       $properties = [Utils]::convertHashtableToDotNotation($hash)
 
 
-      $results = @{
+      $results = [PSCustomObject]@{
         hostname=$hostname;
-        properties=$();
+        properties=@();
       }
 
       foreach($prop in $properties) {
-        $targetVal = [Utils]::fetchValueByDotNotation($hash, $prop)
-        $currentVal = $this.vmwareService.getAdvancedPropertyValue($hostname, $prop)
+        try {
+          $targetVal = [Utils]::fetchValueByDotNotation($hash, $prop)
+          $currentVal = $this.vmwareService.getAdvancedPropertyValue($hostname, $prop)
 
-        $result = @{
-          updateRequired=($targetVal -ne $currentVal);
-          currentValue=$currentVal;
-          targetValue=$targetVal;
-          property=$prop;
-          hostname=$hostname;
+          $results.properties += [PSCustomObject]@{
+            updateRequired=($targetVal -ne $currentVal);
+            currentValue=$currentVal;
+            targetValue=$targetVal;
+            property=$prop;
+            hostname=$hostname;
+          }
+        } catch {
+          $this.error("Error evaluation property '$prop' on host $hostname.", $_)
         }
-
-        $results.properties += $result
       }
 
       return $results
@@ -109,7 +113,7 @@ class ModuleInstance {
         Write-Host "`n=========== HOST: $hostname Advanced Properties Report ===========`n" -ForegroundColor Cyan
         
         foreach ($line in $data.properties) {
-          $this.debug("Property: $($line.property) | Update Required?: $($line.updateRequired) | Current Value: $($line.currentValue) | Target Value: $($line.targetValue)")
+          $this.log("Property: $($line.property) | Update Required?: $($line.updateRequired) | Current Value: $($line.currentValue) | Target Value: $($line.targetValue)")
           if ($line.updateRequired) {
             Write-Host "  Property: $($line.property) | Update Required?: TRUE | Current Value: $($line.currentValue) | Target Value: $($line.targetValue)" -ForegroundColor Yellow
           } else {
@@ -117,7 +121,7 @@ class ModuleInstance {
           }
         }
 
-        Write-Host "`n==================================================================`n" -ForegroundColor Cyan
+        Write-Host "`n==================================================================`n`n" -ForegroundColor Cyan
 
       } else {
         $this.log("Advanced Properties Evaluation Dataset is Empty.")
@@ -157,10 +161,19 @@ class ModuleInstance {
     }
   }
 
-  readConfigFile([string] $path) {
-    
+  [object] readConfigFile([string] $path) {
+    $this.debug("Reading config file at supplied path of '$path'.")
+    try {
+      $resolved = Resolve-Path -Path $path
+      $raw = [IO.File]::ReadAllText($resolved)
+      $data = ConvertFrom-Json $raw
+      $this.log("Loaded config file at supplied path of '$resolved'.")
+      return $data
+    } catch {
+      $this.error("Error reading config file at supplied path of '$path'.", $_)
+      throw "Error reading config file at supplied path of '$path'."
+    }
   }
-
 
   log([string] $message) {
     $this.logService.log($message)
