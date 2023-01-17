@@ -1,0 +1,9 @@
+{
+  "VMkernel": {
+    "Boot": {
+      "hyperthreading": true,
+      "hyperthreadingMitigation": true,
+      "hyperthreadingMitigationIntraVM": false
+    }
+  }
+}
